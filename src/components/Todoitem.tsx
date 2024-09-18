@@ -25,9 +25,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
   };
 
   return (
-    <li className="flex items-center justify-between p-2 border-b">
+    <li className="flex items-center justify-between p-2 border-b hover:bg-gray-100 transition-colors duration-200">
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="flex-grow flex">
+        <form onSubmit={handleSubmit} className="flex items-center flex-grow">
           <input
             type="text"
             className="flex-grow p-1 border rounded"
@@ -36,31 +36,38 @@ const TodoItem: React.FC<TodoItemProps> = ({
           />
           <button
             type="submit"
-            className="ml-2 p-1 bg-green-500 text-white rounded"
+            className="ml-2 p-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200"
           >
             Save
           </button>
         </form>
       ) : (
         <>
-          <div
-            className={`flex-grow cursor-pointer ${
-              todo.completed ? "line-through text-gray-500" : ""
-            }`}
-            onClick={() => toggleTodo(todo.id)}
-          >
-            {todo.text}
+          <div className="flex items-center flex-grow">
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+              className="mr-2 cursor-pointer"
+            />
+            <span
+              className={`flex-grow ${
+                todo.completed ? "line-through text-gray-500" : ""
+              } transition-all duration-200`}
+            >
+              {todo.text}
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsEditing(true)}
-              className="p-1 text-blue-500"
+              className="p-1 text-blue-500 hover:underline"
             >
               Edit
             </button>
             <button
               onClick={() => deleteTodo(todo.id)}
-              className="p-1 text-red-500"
+              className="p-1 text-red-500 hover:underline"
             >
               Delete
             </button>

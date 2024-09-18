@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 import TodoItem from "./Todoitem";
 
@@ -9,19 +9,24 @@ export interface Todo {
 }
 
 const TodoApp: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  });
 
-  // Function to add a new todo
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
   const addTodo = (text: string) => {
     const newTodo: Todo = {
-      id: Date.now(), // Simple unique ID based on timestamp
+      id: Date.now(),
       text,
       completed: false,
     };
     setTodos([newTodo, ...todos]);
   };
 
-  // Function to toggle the completed status of a todo
   const toggleTodo = (id: number) => {
     setTodos(
       todos.map((todo) =>
@@ -30,14 +35,12 @@ const TodoApp: React.FC = () => {
     );
   };
 
-  // Function to edit the text of a todo
   const editTodo = (id: number, newText: string) => {
     setTodos(
       todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
     );
   };
 
-  // Function to delete a todo
   const deleteTodo = (id: number) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
