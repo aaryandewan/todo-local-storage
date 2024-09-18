@@ -41,12 +41,16 @@ const TodoApp: React.FC = () => {
     }
   };
 
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const toggleTodo = async (id: number, text: string, completed: boolean) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/todos/${id}`, {
+        text,
+        completed: !completed,
+      });
+      setTodos(todos.map((todo) => (todo.id === id ? response.data : todo)));
+    } catch (err) {
+      console.error("Error updating Todo: ", err);
+    }
   };
 
   const editTodo = async (id: number, newText: string, completed: boolean) => {

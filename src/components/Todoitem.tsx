@@ -3,7 +3,7 @@ import { Todo } from "./TodoApp";
 
 interface TodoItemProps {
   todo: Todo;
-  toggleTodo: (id: number) => void;
+  toggleTodo: (id: number, text: string, completed: boolean) => void;
   editTodo: (id: number, newText: string, completed: boolean) => void;
   deleteTodo: (id: number) => void;
 }
@@ -47,7 +47,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             <input
               type="checkbox"
               checked={todo.completed}
-              onChange={() => toggleTodo(todo.id)}
+              onChange={() => toggleTodo(todo.id, todo.text, todo.completed)}
               className="mr-2 cursor-pointer"
             />
             <span
