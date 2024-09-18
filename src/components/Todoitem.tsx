@@ -4,7 +4,7 @@ import { Todo } from "./TodoApp";
 interface TodoItemProps {
   todo: Todo;
   toggleTodo: (id: number) => void;
-  editTodo: (id: number, newText: string) => void;
+  editTodo: (id: number, newText: string, completed: boolean) => void;
   deleteTodo: (id: number) => void;
 }
 
@@ -20,7 +20,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() === "") return;
-    editTodo(todo.id, input.trim());
+    editTodo(todo.id, input.trim(), todo.completed);
     setIsEditing(false);
   };
 

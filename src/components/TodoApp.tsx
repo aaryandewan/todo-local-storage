@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 import TodoItem from "./Todoitem";
+import axios from "axios";
 
 export interface Todo {
   id: number;
@@ -9,22 +10,35 @@ export interface Todo {
 }
 
 const TodoApp: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const savedTodos = localStorage.getItem("todos");
-    return savedTodos ? JSON.parse(savedTodos) : [];
-  });
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  // useEffect(() => {
+  //   localStorage.setItem("todos", JSON.stringify(todos));
+  // }, [todos]);
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  const addTodo = (text: string) => {
-    const newTodo: Todo = {
-      id: Date.now(),
-      text,
-      completed: false,
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/todos");
+        setTodos(response.data); // Store fetched todos in state
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+      }
     };
-    setTodos([newTodo, ...todos]);
+
+    fetchTodos();
+  }, []);
+
+  const addTodo = async (text: string) => {
+    try {
+      const response = await axios.post("http://localhost:5000/todos", {
+        text,
+        completed: false,
+      });
+      setTodos([...todos, response.data]);
+    } catch (err) {
+      console.error("Error adding todo", err);
+    }
   };
 
   const toggleTodo = (id: number) => {
@@ -35,14 +49,25 @@ const TodoApp: React.FC = () => {
     );
   };
 
-  const editTodo = (id: number, newText: string) => {
-    setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
-    );
+  const editTodo = async (id: number, newText: string, completed: boolean) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/todos/${id}`, {
+        text: newText,
+        completed,
+      });
+      setTodos(todos.map((todo) => (todo.id === id ? response.data : todo)));
+    } catch (err) {
+      console.error("Error updating Todo: ", err);
+    }
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/todos/${id}`);
+      setTodos(todos.filter((todo) => todo.id !== id));
+    } catch (err) {
+      console.error("Error deleting todo", err);
+    }
   };
 
   return (
